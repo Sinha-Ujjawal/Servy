@@ -19,27 +19,42 @@ defmodule Servy.Handler do
       |> List.first()
       |> String.split(" ")
 
-    %{method: method, path: path, resp_body: ""}
+    %{method: method, path: path, resp_body: "", status: nil}
   end
 
   def route(conv = %{method: method, path: path}), do: route(conv, method, path)
 
   def route(conv, "GET", "/wildthings") do
-    %{conv | resp_body: "Bears, Lions, Tigers"}
+    %{conv | status: 200, resp_body: "Bears, Lions, Tigers"}
   end
 
   def route(conv, "GET", "/bears") do
-    %{conv | resp_body: "Teddy, Smokey, Paddington"}
+    %{conv | status: 200, resp_body: "Teddy, Smokey, Paddington"}
   end
 
-  def format_response(%{resp_body: resp_body}) do
+  def route(conv, _method, path) do
+    %{conv | status: 404, resp_body: "No #{path} here!"}
+  end
+
+  def format_response(%{status: status, resp_body: resp_body}) do
     """
-    HTTP/1.1 200 OK
+    HTTP/1.1 #{status} #{status_reason(status)}
     Content-Type: text/html
     Content-Length: #{String.length(resp_body)}
     
     #{resp_body}
     """
+  end
+
+  defp status_reason(code) do
+    %{
+      200 => "OK",
+      201 => "CREATED",
+      401 => "Unauthorized",
+      403 => "Forbidden",
+      404 => "Not Found",
+      500 => "Interal Server Error"
+    }[code]
   end
 end
 
@@ -54,6 +69,14 @@ end
 
 # request2 = """
 # GET /bears HTTP/1.1
+# HOST: example.com
+# User-Agent: ExampleBrowser/1.0
+# Accept: */*
+
+# """
+
+# request3 = """
+# GET /bigfoot HTTP/1.1
 # HOST: example.com
 # User-Agent: ExampleBrowser/1.0
 # Accept: */*
