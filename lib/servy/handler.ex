@@ -5,10 +5,17 @@ defmodule Servy.Handler do
     # format_response(conv)
     request
     |> parse
+    |> rewrite_path
     |> log
     |> route
     |> format_response
   end
+
+  def rewrite_path(conv = %{path: "/wildlife"}) do
+    %{conv | path: "/wildthings"}
+  end
+
+  def rewrite_path(conv), do: conv
 
   def log(data), do: IO.inspect(data)
 
@@ -111,6 +118,13 @@ Enum.each(
     """,
     """
     GET /bears/100 HTTP/1.1
+    HOST: example.com
+    User-Agent: ExampleBrowser/1.0
+    Accept: */*
+    
+    """,
+    """
+    GET /wildlife HTTP/1.1
     HOST: example.com
     User-Agent: ExampleBrowser/1.0
     Accept: */*
