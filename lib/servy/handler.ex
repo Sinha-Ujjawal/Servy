@@ -37,17 +37,15 @@ defmodule Servy.Handler do
     %{method: method, path: path, resp_body: "", status: nil}
   end
 
-  def route(conv = %{method: method, path: path}), do: route(conv, method, path)
-
-  def route(conv, "GET", "/wildthings") do
+  def route(conv = %{method: "GET", path: "/wildthings"}) do
     %{conv | status: 200, resp_body: "Bears, Lions, Tigers"}
   end
 
-  def route(conv, "GET", "/bears") do
+  def route(conv = %{method: "GET", path: "/bears"}) do
     %{conv | status: 200, resp_body: "Teddy, Smokey, Paddington"}
   end
 
-  def route(conv, "GET", "/bears/" <> bear_id) do
+  def route(conv = %{method: "GET", path: "/bears/" <> bear_id}) do
     case bear_id
          |> String.to_integer()
          |> get_bear_by_id do
@@ -59,8 +57,8 @@ defmodule Servy.Handler do
     end
   end
 
-  def route(conv, _method, path) do
-    %{conv | status: 404, resp_body: "No #{path} here!"}
+  def route(conv = %{method: method, path: path}) do
+    %{conv | status: 404, resp_body: "No #{method} #{path} here!"}
   end
 
   def get_bear_by_id(id) do
