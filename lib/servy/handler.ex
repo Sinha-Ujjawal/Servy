@@ -28,6 +28,10 @@ defmodule Servy.Handler do
     %{conv | resp_body: "Bears, Lions, Tigers"}
   end
 
+  def route(conv, "/bears") do
+    %{conv | resp_body: "Teddy, Smokey, Paddington"}
+  end
+
   def format_response(%{resp_body: resp_body}) do
     """
     HTTP/1.1 200 OK
