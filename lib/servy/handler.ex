@@ -32,8 +32,29 @@ defmodule Servy.Handler do
     %{conv | status: 200, resp_body: "Teddy, Smokey, Paddington"}
   end
 
+  def route(conv, "GET", "/bears/" <> bear_id) do
+    case bear_id
+         |> String.to_integer()
+         |> get_bear_by_id do
+      {:ok, bear} ->
+        %{conv | status: 200, resp_body: bear}
+
+      {:error, reason} ->
+        %{conv | status: 404, resp_body: reason}
+    end
+  end
+
   def route(conv, _method, path) do
     %{conv | status: 404, resp_body: "No #{path} here!"}
+  end
+
+  def get_bear_by_id(id) do
+    case id do
+      1 -> {:ok, "Teddy"}
+      2 -> {:ok, "Smokey"}
+      3 -> {:ok, "Paddington"}
+      _ -> {:error, "No bear with id: #{id}"}
+    end
   end
 
   def format_response(%{status: status, resp_body: resp_body}) do
@@ -58,27 +79,45 @@ defmodule Servy.Handler do
   end
 end
 
-# # The Black line is important
-# request = """
-# GET /wildthings HTTP/1.1
-# HOST: example.com
-# User-Agent: ExampleBrowser/1.0
-# Accept: */*
-
-# """
-
-# request2 = """
-# GET /bears HTTP/1.1
-# HOST: example.com
-# User-Agent: ExampleBrowser/1.0
-# Accept: */*
-
-# """
-
-# request3 = """
-# GET /bigfoot HTTP/1.1
-# HOST: example.com
-# User-Agent: ExampleBrowser/1.0
-# Accept: */*
-
-# """
+Enum.each(
+  [
+    """
+    GET /wildthings HTTP/1.1
+    HOST: example.com
+    User-Agent: ExampleBrowser/1.0
+    Accept: */*
+    
+    """,
+    """
+    GET /bears HTTP/1.1
+    HOST: example.com
+    User-Agent: ExampleBrowser/1.0
+    Accept: */*
+    
+    """,
+    """
+    GET /bigfoot HTTP/1.1
+    HOST: example.com
+    User-Agent: ExampleBrowser/1.0
+    Accept: */*
+    
+    """,
+    """
+    GET /bears/1 HTTP/1.1
+    HOST: example.com
+    User-Agent: ExampleBrowser/1.0
+    Accept: */*
+    
+    """,
+    """
+    GET /bears/100 HTTP/1.1
+    HOST: example.com
+    User-Agent: ExampleBrowser/1.0
+    Accept: */*
+    
+    """
+  ],
+  fn request ->
+    request |> Servy.Handler.handle() |> IO.puts()
+  end
+)
