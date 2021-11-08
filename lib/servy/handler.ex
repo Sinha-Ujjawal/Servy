@@ -22,13 +22,13 @@ defmodule Servy.Handler do
     %{method: method, path: path, resp_body: ""}
   end
 
-  def route(conv = %{path: path}), do: route(conv, path)
+  def route(conv = %{method: method, path: path}), do: route(conv, method, path)
 
-  def route(conv, "/wildthings") do
+  def route(conv, "GET", "/wildthings") do
     %{conv | resp_body: "Bears, Lions, Tigers"}
   end
 
-  def route(conv, "/bears") do
+  def route(conv, "GET", "/bears") do
     %{conv | resp_body: "Teddy, Smokey, Paddington"}
   end
 
