@@ -4,6 +4,7 @@ defmodule Servy.Handler do
   """
 
   alias Servy.Conv
+  alias Servy.BearController
 
   @pages_path "../../pages" |> Path.expand(__DIR__)
 
@@ -29,19 +30,15 @@ defmodule Servy.Handler do
   end
 
   def route(conv = %Conv{method: "GET", path: "/bears"}) do
-    %{conv | status: 200, resp_body: "Teddy, Smokey, Paddington"}
+    BearController.index(conv)
   end
 
-  def route(conv = %Conv{method: "GET", path: "/bears/" <> bear_id}) do
-    case bear_id
-         |> String.to_integer()
-         |> get_bear_by_id do
-      {:ok, bear} ->
-        %{conv | status: 200, resp_body: bear}
+  def route(conv = %Conv{method: "GET", path: "/bears/" <> id, params: params}) do
+    BearController.show(conv, Map.put(params, "id", id))
+  end
 
-      {:error, reason} ->
-        %{conv | status: 404, resp_body: reason}
-    end
+  def route(conv = %Conv{method: "POST", path: "/bears", params: params}) do
+    BearController.create(conv, params)
   end
 
   # def route(conv = %Conv{method: "GET", path: "/about"}) do
@@ -69,12 +66,6 @@ defmodule Servy.Handler do
     |> handle_file(conv)
   end
 
-  def route(
-        conv = %Conv{method: "POST", path: "/bears", params: %{"name" => name, "type" => type}}
-      ) do
-    %{conv | status: 201, resp_body: "Created a #{type} bear named #{name}!"}
-  end
-
   def route(conv = %Conv{method: method, path: path}) do
     %{conv | status: 404, resp_body: "No #{method} #{path} here!"}
   end
@@ -89,15 +80,6 @@ defmodule Servy.Handler do
 
   def handle_file({:error, reason}, conv = %Conv{}) do
     %{conv | status: 500, resp_body: "File error: #{reason}"}
-  end
-
-  def get_bear_by_id(id) do
-    case id do
-      1 -> {:ok, "Teddy"}
-      2 -> {:ok, "Smokey"}
-      3 -> {:ok, "Paddington"}
-      _ -> {:error, "No bear with id: #{id}"}
-    end
   end
 
   def format_response(conv = %Conv{resp_body: resp_body}) do
