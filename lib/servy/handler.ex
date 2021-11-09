@@ -69,6 +69,12 @@ defmodule Servy.Handler do
     |> handle_file(conv)
   end
 
+  def route(
+        conv = %Conv{method: "POST", path: "/bears", params: %{"name" => name, "type" => type}}
+      ) do
+    %{conv | status: 201, resp_body: "Created a #{type} bear named #{name}!"}
+  end
+
   def route(conv = %Conv{method: method, path: path}) do
     %{conv | status: 404, resp_body: "No #{method} #{path} here!"}
   end
@@ -99,7 +105,7 @@ defmodule Servy.Handler do
     HTTP/1.1 #{Conv.full_status(conv)}
     Content-Type: text/html
     Content-Length: #{String.length(resp_body)}
-    
+
     #{resp_body}
     """
   end
@@ -112,49 +118,59 @@ Enum.each(
     HOST: example.com
     User-Agent: ExampleBrowser/1.0
     Accept: */*
-    
+
     """,
     """
     GET /bears HTTP/1.1
     HOST: example.com
     User-Agent: ExampleBrowser/1.0
     Accept: */*
-    
+
     """,
     """
     GET /bigfoot HTTP/1.1
     HOST: example.com
     User-Agent: ExampleBrowser/1.0
     Accept: */*
-    
+
     """,
     """
     GET /bears/1 HTTP/1.1
     HOST: example.com
     User-Agent: ExampleBrowser/1.0
     Accept: */*
-    
+
     """,
     """
     GET /bears/100 HTTP/1.1
     HOST: example.com
     User-Agent: ExampleBrowser/1.0
     Accept: */*
-    
+
     """,
     """
     GET /wildlife HTTP/1.1
     HOST: example.com
     User-Agent: ExampleBrowser/1.0
     Accept: */*
-    
+
     """,
     """
     GET /about HTTP/1.1
     HOST: example.com
     User-Agent: ExampleBrowser/1.0
     Accept: */*
-    
+
+    """,
+    """
+    POST /bears HTTP/1.1
+    HOST: example.com
+    User-Agent: ExampleBrowser/1.0
+    Accept: */*
+    Content-Type: application/x-www-form-urlencoded
+    Content-Length: 21
+
+    name=Baloo&type=Brown
     """
   ],
   fn request ->
