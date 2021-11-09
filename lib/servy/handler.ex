@@ -3,6 +3,8 @@ defmodule Servy.Handler do
   Handles HTTP requests.
   """
 
+  alias Servy.Conv
+
   @pages_path "../../pages" |> Path.expand(__DIR__)
 
   import Servy.Parser, only: [parse: 1]
@@ -22,15 +24,15 @@ defmodule Servy.Handler do
     |> format_response
   end
 
-  def route(conv = %{method: "GET", path: "/wildthings"}) do
+  def route(conv = %Conv{method: "GET", path: "/wildthings"}) do
     %{conv | status: 200, resp_body: "Bears, Lions, Tigers"}
   end
 
-  def route(conv = %{method: "GET", path: "/bears"}) do
+  def route(conv = %Conv{method: "GET", path: "/bears"}) do
     %{conv | status: 200, resp_body: "Teddy, Smokey, Paddington"}
   end
 
-  def route(conv = %{method: "GET", path: "/bears/" <> bear_id}) do
+  def route(conv = %Conv{method: "GET", path: "/bears/" <> bear_id}) do
     case bear_id
          |> String.to_integer()
          |> get_bear_by_id do
@@ -42,7 +44,7 @@ defmodule Servy.Handler do
     end
   end
 
-  # def route(conv = %{method: "GET", path: "/about"}) do
+  # def route(conv = %Conv{method: "GET", path: "/about"}) do
   #   about_file =
   #     "../../pages"
   #     |> Path.expand(__DIR__)
@@ -60,26 +62,26 @@ defmodule Servy.Handler do
   #   end
   # end
 
-  def route(conv = %{method: "GET", path: "/about"}) do
+  def route(conv = %Conv{method: "GET", path: "/about"}) do
     @pages_path
     |> Path.join("about.html")
     |> File.read()
     |> handle_file(conv)
   end
 
-  def route(conv = %{method: method, path: path}) do
+  def route(conv = %Conv{method: method, path: path}) do
     %{conv | status: 404, resp_body: "No #{method} #{path} here!"}
   end
 
-  def handle_file({:ok, content}, conv) do
+  def handle_file({:ok, content}, conv = %Conv{}) do
     %{conv | status: 200, resp_body: content}
   end
 
-  def handle_file({:error, :enoent}, conv) do
+  def handle_file({:error, :enoent}, conv = %Conv{}) do
     %{conv | status: 500, resp_body: "File not found!"}
   end
 
-  def handle_file({:error, reason}, conv) do
+  def handle_file({:error, reason}, conv = %Conv{}) do
     %{conv | status: 500, resp_body: "File error: #{reason}"}
   end
 
@@ -92,25 +94,14 @@ defmodule Servy.Handler do
     end
   end
 
-  def format_response(%{status: status, resp_body: resp_body}) do
+  def format_response(conv = %Conv{resp_body: resp_body}) do
     """
-    HTTP/1.1 #{status} #{status_reason(status)}
+    HTTP/1.1 #{Conv.full_status(conv)}
     Content-Type: text/html
     Content-Length: #{String.length(resp_body)}
     
     #{resp_body}
     """
-  end
-
-  defp status_reason(code) do
-    %{
-      200 => "OK",
-      201 => "CREATED",
-      401 => "Unauthorized",
-      403 => "Forbidden",
-      404 => "Not Found",
-      500 => "Interal Server Error"
-    }[code]
   end
 end
 
