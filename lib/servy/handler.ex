@@ -93,69 +93,69 @@ defmodule Servy.Handler do
   end
 end
 
-Enum.each(
-  [
-    """
-    GET /wildthings HTTP/1.1
-    HOST: example.com
-    User-Agent: ExampleBrowser/1.0
-    Accept: */*
+# Enum.each(
+#   [
+#     """
+#     GET /wildthings HTTP/1.1
+#     HOST: example.com
+#     User-Agent: ExampleBrowser/1.0
+#     Accept: */*
 
-    """,
-    """
-    GET /bears HTTP/1.1
-    HOST: example.com
-    User-Agent: ExampleBrowser/1.0
-    Accept: */*
+#     """,
+#     """
+#     GET /bears HTTP/1.1
+#     HOST: example.com
+#     User-Agent: ExampleBrowser/1.0
+#     Accept: */*
 
-    """,
-    """
-    GET /bigfoot HTTP/1.1
-    HOST: example.com
-    User-Agent: ExampleBrowser/1.0
-    Accept: */*
+#     """,
+#     """
+#     GET /bigfoot HTTP/1.1
+#     HOST: example.com
+#     User-Agent: ExampleBrowser/1.0
+#     Accept: */*
 
-    """,
-    """
-    GET /bears/1 HTTP/1.1
-    HOST: example.com
-    User-Agent: ExampleBrowser/1.0
-    Accept: */*
+#     """,
+#     """
+#     GET /bears/1 HTTP/1.1
+#     HOST: example.com
+#     User-Agent: ExampleBrowser/1.0
+#     Accept: */*
 
-    """,
-    """
-    GET /bears/100 HTTP/1.1
-    HOST: example.com
-    User-Agent: ExampleBrowser/1.0
-    Accept: */*
+#     """,
+#     """
+#     GET /bears/100 HTTP/1.1
+#     HOST: example.com
+#     User-Agent: ExampleBrowser/1.0
+#     Accept: */*
 
-    """,
-    """
-    GET /wildlife HTTP/1.1
-    HOST: example.com
-    User-Agent: ExampleBrowser/1.0
-    Accept: */*
+#     """,
+#     """
+#     GET /wildlife HTTP/1.1
+#     HOST: example.com
+#     User-Agent: ExampleBrowser/1.0
+#     Accept: */*
 
-    """,
-    """
-    GET /about HTTP/1.1
-    HOST: example.com
-    User-Agent: ExampleBrowser/1.0
-    Accept: */*
+#     """,
+#     """
+#     GET /about HTTP/1.1
+#     HOST: example.com
+#     User-Agent: ExampleBrowser/1.0
+#     Accept: */*
 
-    """,
-    """
-    POST /bears HTTP/1.1
-    HOST: example.com
-    User-Agent: ExampleBrowser/1.0
-    Accept: */*
-    Content-Type: application/x-www-form-urlencoded
-    Content-Length: 21
+#     """,
+#     """
+#     POST /bears HTTP/1.1
+#     HOST: example.com
+#     User-Agent: ExampleBrowser/1.0
+#     Accept: */*
+#     Content-Type: application/x-www-form-urlencoded
+#     Content-Length: 21
 
-    name=Baloo&type=Brown
-    """
-  ],
-  fn request ->
-    request |> Servy.Handler.handle() |> IO.puts()
-  end
-)
+#     name=Baloo&type=Brown
+#     """
+#   ],
+#   fn request ->
+#     request |> Servy.Handler.handle() |> IO.puts()
+#   end
+# )
