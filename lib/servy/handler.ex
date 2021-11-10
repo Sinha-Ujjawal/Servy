@@ -7,7 +7,6 @@ defmodule Servy.Handler do
   alias Servy.BearController
   alias Servy.VideoCam
   alias Servy.Tracker
-  alias Servy.Fetcher
 
   @pages_path "../../pages" |> Path.expand(__DIR__)
 
@@ -29,14 +28,14 @@ defmodule Servy.Handler do
   end
 
   def route(conv = %Conv{method: "GET", path: "/sensors"}) do
-    pid4 = Fetcher.async(fn -> Tracker.get_location("bigfoot") end)
+    task = Task.async(fn -> Tracker.get_location("bigfoot") end)
 
     snapshots =
       ["cam-1", "cam-2", "cam-3"]
-      |> Enum.map(&Fetcher.async(fn -> VideoCam.get_snapshot(&1) end))
-      |> Enum.map(&Fetcher.get_result/1)
+      |> Enum.map(&Task.async(fn -> VideoCam.get_snapshot(&1) end))
+      |> Task.await_many(:infinity)
 
-    bigfoot_location = Fetcher.get_result(pid4)
+    bigfoot_location = Task.await(task, :infinity)
 
     %{conv | status: 200, resp_body: inspect({snapshots, bigfoot_location})}
   end
@@ -44,8 +43,8 @@ defmodule Servy.Handler do
   def route(conv = %Conv{method: "GET", path: "/snapshots"}) do
     snapshots =
       ["cam-1", "cam-2", "cam-3"]
-      |> Enum.map(&Fetcher.async(fn -> VideoCam.get_snapshot(&1) end))
-      |> Enum.map(&Fetcher.get_result/1)
+      |> Enum.map(&Task.async(fn -> VideoCam.get_snapshot(&1) end))
+      |> Task.await_many(:infinity)
 
     %{conv | status: 200, resp_body: inspect(snapshots)}
   end
