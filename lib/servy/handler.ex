@@ -82,80 +82,13 @@ defmodule Servy.Handler do
     %{conv | status: 500, resp_body: "File error: #{reason}"}
   end
 
-  def format_response(conv = %Conv{resp_body: resp_body}) do
+  def format_response(conv = %Conv{resp_body: resp_body, resp_content_type: resp_content_type}) do
     """
     HTTP/1.1 #{Conv.full_status(conv)}
-    Content-Type: text/html
+    Content-Type: #{resp_content_type}
     Content-Length: #{String.length(resp_body)}
 
     #{resp_body}
     """
   end
 end
-
-# Enum.each(
-#   [
-#     """
-#     GET /wildthings HTTP/1.1
-#     HOST: example.com
-#     User-Agent: ExampleBrowser/1.0
-#     Accept: */*
-
-#     """,
-#     """
-#     GET /bears HTTP/1.1
-#     HOST: example.com
-#     User-Agent: ExampleBrowser/1.0
-#     Accept: */*
-
-#     """,
-#     """
-#     GET /bigfoot HTTP/1.1
-#     HOST: example.com
-#     User-Agent: ExampleBrowser/1.0
-#     Accept: */*
-
-#     """,
-#     """
-#     GET /bears/1 HTTP/1.1
-#     HOST: example.com
-#     User-Agent: ExampleBrowser/1.0
-#     Accept: */*
-
-#     """,
-#     """
-#     GET /bears/100 HTTP/1.1
-#     HOST: example.com
-#     User-Agent: ExampleBrowser/1.0
-#     Accept: */*
-
-#     """,
-#     """
-#     GET /wildlife HTTP/1.1
-#     HOST: example.com
-#     User-Agent: ExampleBrowser/1.0
-#     Accept: */*
-
-#     """,
-#     """
-#     GET /about HTTP/1.1
-#     HOST: example.com
-#     User-Agent: ExampleBrowser/1.0
-#     Accept: */*
-
-#     """,
-#     """
-#     POST /bears HTTP/1.1
-#     HOST: example.com
-#     User-Agent: ExampleBrowser/1.0
-#     Accept: */*
-#     Content-Type: application/x-www-form-urlencoded
-#     Content-Length: 21
-
-#     name=Baloo&type=Brown
-#     """
-#   ],
-#   fn request ->
-#     request |> Servy.Handler.handle() |> IO.puts()
-#   end
-# )
