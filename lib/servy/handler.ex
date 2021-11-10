@@ -91,7 +91,7 @@ defmodule Servy.Handler do
     HTTP/1.1 #{Conv.full_status(conv)}
     Content-Type: #{resp_content_type}
     Content-Length: #{String.length(resp_body)}
-
+    
     #{resp_body}
     """
   end

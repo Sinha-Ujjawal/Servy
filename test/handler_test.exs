@@ -9,7 +9,7 @@ defmodule HandlerTest do
     HOST: example.com
     User-Agent: ExampleBrowser/1.0
     Accept: */*
-
+    
     """
 
     response = handle(request)
@@ -18,7 +18,7 @@ defmodule HandlerTest do
            HTTP/1.1 200 OK
            Content-Type: text/html
            Content-Length: 20
-
+           
            Bears, Lions, Tigers
            """
   end
@@ -29,7 +29,7 @@ defmodule HandlerTest do
     HOST: example.com
     User-Agent: ExampleBrowser/1.0
     Accept: */*
-
+    
     """
 
     response = handle(request)
@@ -38,13 +38,13 @@ defmodule HandlerTest do
     HTTP/1.1 200 OK
     Content-Type: text/html
     Content-Length: 93
-
+    
     <ul>
-
+    
         <li>Paddington - Brown</li>
-
+    
         <li>Teddy - Brown</li>
-
+    
     </ul>
     """
 
@@ -57,7 +57,7 @@ defmodule HandlerTest do
     HOST: example.com
     User-Agent: ExampleBrowser/1.0
     Accept: */*
-
+    
     """
 
     response = handle(request)
@@ -66,7 +66,7 @@ defmodule HandlerTest do
            HTTP/1.1 404 Not Found
            Content-Type: text/html
            Content-Length: 21
-
+           
            No GET /bigfoot here!
            """
   end
@@ -77,7 +77,7 @@ defmodule HandlerTest do
     HOST: example.com
     User-Agent: ExampleBrowser/1.0
     Accept: */*
-
+    
     """
 
     response = handle(request)
@@ -86,7 +86,7 @@ defmodule HandlerTest do
     HTTP/1.1 200 OK
     Content-Type: text/html
     Content-Length: 38
-
+    
     <h1>Show Bear</h1>
     <p>
     Teddy
@@ -102,7 +102,7 @@ defmodule HandlerTest do
     HOST: example.com
     User-Agent: ExampleBrowser/1.0
     Accept: */*
-
+    
     """
 
     response = handle(request)
@@ -111,12 +111,12 @@ defmodule HandlerTest do
     HTTP/1.1 200 OK
     Content-Type: text/html
     Content-Length: 56
-
+    
     <h1>Show Bear</h1>
     <p>
     "Bear does not exists!"
     </p>
-
+    
     """
 
     assert remove_whitespace(response) == remove_whitespace(expected_response)
@@ -128,7 +128,7 @@ defmodule HandlerTest do
     HOST: example.com
     User-Agent: ExampleBrowser/1.0
     Accept: */*
-
+    
     """
 
     response = handle(request)
@@ -137,7 +137,7 @@ defmodule HandlerTest do
            HTTP/1.1 200 OK
            Content-Type: text/html
            Content-Length: 20
-
+           
            Bears, Lions, Tigers
            """
   end
@@ -148,7 +148,7 @@ defmodule HandlerTest do
     HOST: example.com
     User-Agent: ExampleBrowser/1.0
     Accept: */*
-
+    
     """
 
     response = handle(request)
@@ -157,9 +157,9 @@ defmodule HandlerTest do
     HTTP/1.1 200 OK
     Content-Type: text/html
     Content-Length: 328
-
+    
     <h1>Clark's Wildthings Refuge</h1>
-
+    
     <blockquote>
     When we contemplate the whole globe as one great dewdrop, striped and dotted
     with continents and islands, flying through space with other stars all singing
@@ -179,7 +179,7 @@ defmodule HandlerTest do
     Accept: */*
     Content-Type: application/x-www-form-urlencoded
     Content-Length: 21
-
+    
     name=Baloo&type=Brown
     """
 
@@ -189,7 +189,7 @@ defmodule HandlerTest do
            HTTP/1.1 201 CREATED
            Content-Type: text/html
            Content-Length: 33
-
+           
            Created a Brown bear named Baloo!
            """
   end
@@ -200,7 +200,7 @@ defmodule HandlerTest do
     HOST: example.com
     User-Agent: ExampleBrowser/1.0
     Accept: */*
-
+    
     """
 
     response = handle(request)
@@ -209,7 +209,7 @@ defmodule HandlerTest do
     HTTP/1.1 200 OK
     Content-Type: application/json
     Content-Length: 183
-
+    
     [{"hibernating":true,"id":1,"name":"Teddy","type":"Brown"},{"hibernating":false,"id":2,"name":"Smokey","type":"Black"},{"hibernating":false,"id":3,"name":"Paddington","type":"Brown"}]
     """
 
