@@ -85,7 +85,7 @@ defmodule HandlerTest do
     expected_response = """
     HTTP/1.1 200 OK
     Content-Type: text/html
-    Content-Length: 38
+    Content-Length: 40
     
     <h1>Show Bear</h1>
     <p>
@@ -110,13 +110,12 @@ defmodule HandlerTest do
     expected_response = """
     HTTP/1.1 200 OK
     Content-Type: text/html
-    Content-Length: 56
+    Content-Length: 63
     
     <h1>Show Bear</h1>
     <p>
-    "Bear does not exists!"
+    <i>Bear does not exists!</i>
     </p>
-    
     """
 
     assert remove_whitespace(response) == remove_whitespace(expected_response)

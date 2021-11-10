@@ -1,6 +1,8 @@
 <h1>Show Bear</h1>
-<p><%= if bear do %>
+<p>
+<%= if bear do %>
     <%= bear.name %>
 <% else %>
-    "Bear does not exists!"
-<% end %></p>
+    <i>Bear does not exists!</i>
+<% end %>
+</p>
