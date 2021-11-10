@@ -194,6 +194,28 @@ defmodule HandlerTest do
            """
   end
 
+  test "GET /api/bears" do
+    request = """
+    GET /api/bears HTTP/1.1
+    HOST: example.com
+    User-Agent: ExampleBrowser/1.0
+    Accept: */*
+
+    """
+
+    response = handle(request)
+
+    expected_response = """
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    Content-Length: 183
+
+    [{"hibernating":true,"id":1,"name":"Teddy","type":"Brown"},{"hibernating":false,"id":2,"name":"Smokey","type":"Black"},{"hibernating":false,"id":3,"name":"Paddington","type":"Brown"}]
+    """
+
+    assert remove_whitespace(response) == remove_whitespace(expected_response)
+  end
+
   def remove_whitespace(s) do
     String.replace(s, ~r{\s}, "")
   end
