@@ -44,19 +44,19 @@ defmodule Servy.PledgeServer2 do
   end
 end
 
-alias Servy.PledgeServer2
+# alias Servy.PledgeServer2
 
-{:ok, _pid} = PledgeServer2.start()
+# {:ok, _pid} = PledgeServer2.start()
 
-IO.inspect(PledgeServer2.create_pledge("larry", 10))
-IO.inspect(PledgeServer2.create_pledge("moe", 20))
-IO.inspect(PledgeServer2.create_pledge("curly", 30))
-IO.inspect(PledgeServer2.create_pledge("daisy", 40))
+# IO.inspect(PledgeServer2.create_pledge("larry", 10))
+# IO.inspect(PledgeServer2.create_pledge("moe", 20))
+# IO.inspect(PledgeServer2.create_pledge("curly", 30))
+# IO.inspect(PledgeServer2.create_pledge("daisy", 40))
 
-PledgeServer2.clear()
+# PledgeServer2.clear()
 
-IO.inspect(PledgeServer2.create_pledge("grace", 50))
+# IO.inspect(PledgeServer2.create_pledge("grace", 50))
 
-IO.inspect(PledgeServer2.recent_pledges())
+# IO.inspect(PledgeServer2.recent_pledges())
 
-IO.inspect(PledgeServer2.total_pledged())
+# IO.inspect(PledgeServer2.total_pledged())
