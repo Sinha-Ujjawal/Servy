@@ -9,56 +9,56 @@ defmodule Servy.PledgeServer do
     pid
   end
 
-  def create_pledge(name, amount) do
-    send(@name, {self(), :create_pledge, name, amount})
+  def call(pid, message) do
+    send(pid, {self(), message})
 
     receive do
-      {:response, status} -> status
+      {:response, response} -> response
     end
+  end
+
+  def create_pledge(name, amount) do
+    call(@name, {:create_pledge, name, amount})
   end
 
   def recent_pledges() do
-    send(@name, {self(), :recent_pledges})
-
-    receive do
-      {:response, pledges} -> pledges
-    end
+    call(@name, :recent_pledges)
   end
 
   def total_pledged() do
-    send(@name, {self(), :total_pledged})
-
-    receive do
-      {:response, total} -> total
-    end
+    call(@name, :total_pledged)
   end
 
   # Server
   def listen_loop(state) do
     receive do
-      {sender, :create_pledge, name, amount} ->
-        {:ok, id} = send_pledge_to_service(name, amount)
-        most_recent_pledges = Enum.take(state, 2)
-        new_state = [{name, amount} | most_recent_pledges]
-        send(sender, {:response, id})
+      {sender, message} when is_pid(sender) ->
+        {response, new_state} = handle_call(message, state)
+        send(sender, {:response, response})
         listen_loop(new_state)
-
-      {sender, :recent_pledges} ->
-        send(sender, {:response, state})
-        listen_loop(state)
-
-      {sender, :total_pledged} ->
-        total =
-          state
-          |> Enum.map(&elem(&1, 1))
-          |> Enum.sum()
-
-        send(sender, {:response, total})
-        listen_loop(state)
 
       unexpected ->
         IO.puts("Unexpected message: #{inspect(unexpected)}")
+        listen_loop(state)
     end
+  end
+
+  def handle_call({:create_pledge, name, amount}, state) do
+    {:ok, id} = send_pledge_to_service(name, amount)
+    most_recent_pledges = Enum.take(state, 2)
+    new_state = [{name, amount} | most_recent_pledges]
+    {id, new_state}
+  end
+
+  def handle_call(:recent_pledges, state), do: {state, state}
+
+  def handle_call(:total_pledged, state) do
+    total =
+      state
+      |> Enum.map(&elem(&1, 1))
+      |> Enum.sum()
+
+    {total, state}
   end
 
   defp send_pledge_to_service(_name, _amount) do
