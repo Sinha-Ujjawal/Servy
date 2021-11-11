@@ -9,7 +9,15 @@ defmodule Servy.ServicesSupervisor do
 
   def start_link(initial_config \\ %State{}) do
     IO.puts("Starting the services supervisor...")
-    Supervisor.start_link(__MODULE__, initial_config, name: __MODULE__)
+
+    Supervisor.start_link(
+      __MODULE__,
+      %State{
+        cache_size: initial_config.cache_size,
+        refresh_interval: initial_config.refresh_interval
+      },
+      name: __MODULE__
+    )
   end
 
   def init(%State{cache_size: cache_size, refresh_interval: refresh_interval}) do
