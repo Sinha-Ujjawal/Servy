@@ -1,14 +1,20 @@
 defmodule Servy.SensorServer do
   @name :sensor_server
-  @refresh_interval :timer.minutes(10)
 
   use GenServer
   alias Servy.VideoCam
   alias Servy.Tracker
 
+  defmodule State do
+    # mins
+    @refresh_interval 10
+    defstruct refresh_interval: @refresh_interval, sensor_data: %{}
+  end
+
   # Client Interface
-  def start do
-    GenServer.start(__MODULE__, %{}, name: @name)
+  def start_link(%{refresh_interval: refresh_interval}) do
+    IO.puts("Starting the sensor server with refresh_interval: #{refresh_interval} mins ...")
+    GenServer.start_link(__MODULE__, %State{refresh_interval: refresh_interval}, name: @name)
   end
 
   def get_sensor_data do
@@ -16,26 +22,26 @@ defmodule Servy.SensorServer do
   end
 
   # Server Callbacks
-  defp schedule_refresh do
-    IO.puts("Scheduling the refresh to run after: #{inspect(@refresh_interval)} ms")
-    Process.send_after(self(), :refresh, @refresh_interval)
+  defp schedule_refresh(refresh_interval) do
+    IO.puts("Scheduling the refresh to run after: #{inspect(refresh_interval)} mins")
+    Process.send_after(self(), :refresh, :timer.minutes(refresh_interval))
   end
 
-  def init(_state) do
-    initial_state = run_tasks_to_get_sensor_data()
-    schedule_refresh()
-    {:ok, initial_state}
+  def init(state = %State{refresh_interval: refresh_interval}) do
+    sensor_data = run_tasks_to_get_sensor_data()
+    schedule_refresh(refresh_interval)
+    {:ok, %{state | sensor_data: sensor_data}}
   end
 
   def handle_call(:get_sensor_data, _from, state) do
-    {:reply, state, state}
+    {:reply, state.sensor_data, state}
   end
 
-  def handle_info(:refresh, _state) do
+  def handle_info(:refresh, state = %State{refresh_interval: refresh_interval}) do
     IO.puts("Refreshing the cache...")
-    new_state = run_tasks_to_get_sensor_data()
-    schedule_refresh()
-    {:noreply, new_state}
+    sensor_data_updated = run_tasks_to_get_sensor_data()
+    schedule_refresh(refresh_interval)
+    {:noreply, %{state | sensor_data: sensor_data_updated}}
   end
 
   def run_tasks_to_get_sensor_data do

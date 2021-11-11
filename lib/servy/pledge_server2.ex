@@ -8,9 +8,9 @@ defmodule Servy.PledgeServer2 do
   end
 
   # Client Interface
-  def start(cache_size \\ 3) do
-    IO.puts("Starting the pledge server...")
-    GenServer.start(__MODULE__, %State{cache_size: cache_size}, name: @name)
+  def start_link(%{cache_size: cache_size}) do
+    IO.puts("Starting the pledge server with cache_size: #{cache_size} ...")
+    GenServer.start_link(__MODULE__, %State{cache_size: cache_size}, name: @name)
   end
 
   def create_pledge(name, amount), do: GenServer.call(@name, {:create_pledge, name, amount})
