@@ -1,48 +1,23 @@
 defmodule Servy.PledgeServer do
+  alias Servy.GenericServer
+
   @name :pledge_server
 
   # Client Interface
   def start do
     IO.puts("Starting the pledge server...")
-    pid = spawn(__MODULE__, :listen_loop, [[]])
-    Process.register(pid, @name)
-    pid
+    GenericServer.start(__MODULE__, [], @name)
   end
 
-  def call(pid, message) do
-    send(pid, {self(), message})
+  def create_pledge(name, amount), do: GenericServer.call(@name, {:create_pledge, name, amount})
 
-    receive do
-      {:response, response} -> response
-    end
-  end
+  def recent_pledges(), do: GenericServer.call(@name, :recent_pledges)
 
-  def create_pledge(name, amount) do
-    call(@name, {:create_pledge, name, amount})
-  end
+  def total_pledged(), do: GenericServer.call(@name, :total_pledged)
 
-  def recent_pledges() do
-    call(@name, :recent_pledges)
-  end
+  def clear(), do: GenericServer.cast(@name, :clear)
 
-  def total_pledged() do
-    call(@name, :total_pledged)
-  end
-
-  # Server
-  def listen_loop(state) do
-    receive do
-      {sender, message} when is_pid(sender) ->
-        {response, new_state} = handle_call(message, state)
-        send(sender, {:response, response})
-        listen_loop(new_state)
-
-      unexpected ->
-        IO.puts("Unexpected message: #{inspect(unexpected)}")
-        listen_loop(state)
-    end
-  end
-
+  # Server Callbacks
   def handle_call({:create_pledge, name, amount}, state) do
     {:ok, id} = send_pledge_to_service(name, amount)
     most_recent_pledges = Enum.take(state, 2)
@@ -61,22 +36,27 @@ defmodule Servy.PledgeServer do
     {total, state}
   end
 
+  def handle_cast(:clear, _state), do: []
+
   defp send_pledge_to_service(_name, _amount) do
     # CODE GOES HERE TO SEND PLEDGE TO EXTERNAL SERVICE
     {:ok, "pledge-#{:rand.uniform(1000)}"}
   end
 end
 
-# alias Servy.PledgeServer
+alias Servy.PledgeServer
 
-# _pid = PledgeServer.start()
+_pid = PledgeServer.start()
 
-# IO.inspect(PledgeServer.create_pledge("larry", 10))
-# IO.inspect(PledgeServer.create_pledge("moe", 20))
-# IO.inspect(PledgeServer.create_pledge("curly", 30))
-# IO.inspect(PledgeServer.create_pledge("daisy", 40))
-# IO.inspect(PledgeServer.create_pledge("grace", 50))
+IO.inspect(PledgeServer.create_pledge("larry", 10))
+IO.inspect(PledgeServer.create_pledge("moe", 20))
+IO.inspect(PledgeServer.create_pledge("curly", 30))
+IO.inspect(PledgeServer.create_pledge("daisy", 40))
 
-# IO.inspect(PledgeServer.recent_pledges())
+PledgeServer.clear()
 
-# IO.inspect(PledgeServer.total_pledged())
+IO.inspect(PledgeServer.create_pledge("grace", 50))
+
+IO.inspect(PledgeServer.recent_pledges())
+
+IO.inspect(PledgeServer.total_pledged())
